@@ -1,6 +1,6 @@
   {
     "name": "Remover Nonio",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "description": "Não te registes no Nonio! Quando aparecer o nonio clicas para o remover. Não fica a executar sempre em 2º plano, como os outros...",
     "permissions": ["activeTab", "declarativeContent", "storage"],
     "background": {
