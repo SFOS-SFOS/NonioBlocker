@@ -313,3 +313,88 @@ function ativateScrolsBar() {
     );
 
 }
+
+
+export function removeNonio(hostname) {
+    console.log("Vou remover de ", hostname);
+
+    switch (hostname) {
+        case "www.record.pt":
+            toRemove = ["gatting_container"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "www.publico.pt":
+            toRemove = ["warning-nonio-overlay"];
+            removeClassNonio(toRemove);
+            break;
+        case "www.jn.pt":
+            toRemove = ["tp-modal", "tp-backdrop"];
+            removeClassNonio(toRemove);
+            break;
+
+        case "radiocomercial.iol.pt":
+            toRemove = ["nonioBox"];
+            removeClassNonio(toRemove);
+            break;
+
+        case "www.aquelamaquina.pt":
+            toRemove = ["gatting_container"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "autoportal.iol.pt":
+            toRemove = ["nonioBox"];
+            removeClassNonio(toRemove);
+            break;
+
+        case "www.classificadoscm.pt":
+            toRemove = ["gatting_container"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "'www.cmjornal.pt":
+            toRemove = ["gatting_container"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "www.dinheirovivo.pt":
+            removeIframesNonio();
+            break;
+
+        case "www.dn.pt":
+            toRemove = ["tp-modal", "tp-backdrop tp-active"];
+            removeClassNonio(toRemove);
+            break;
+
+        case "expresso.pt":
+            toRemove = ["imp-content-gate-root"];
+            removeIdNonio(toRemove);
+            break;
+
+        case "www.flash.pt":
+            toRemove = ["gatting_container"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "www.jornaldenegocios.pt":
+            toRemove = ["gatting_container"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "maisfutebol.iol.pt":
+            toRemove = ["nonioBox"];
+            removeClassNonio(toRemove);
+            break;
+
+        case "rr.sapo.pt":
+            toRemove = ["maskContentGatingNonio"];
+            removeParentClassIdNonio(toRemove);
+            break;
+
+        case "www.sabado.pt":
+            toRemove = ["gatting_containerLN681a8ea163a8a8224a11839ad9e2b731"];
+            removeParentClassIdNonio(toRemove);
+            break;
+    }
+}
