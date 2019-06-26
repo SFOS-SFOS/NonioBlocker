@@ -71,14 +71,21 @@ function removeNonio(hostname) {
             break;
 
         case "www.aquelamaquina.pt":
-        case "www.record.pt":
-        case "'www.cmjornal.pt":
+        case "www.cmjornal.pt":
         case "www.classificadoscm.pt":
         case "www.flash.pt":
         case "www.jornaldenegocios.pt":
         case "www.maxima.pt":
         case "www.vidas.pt":
             removeParentClassIdNonio(["gatting_container"]);
+            break;
+
+        case "www.sabado.pt":
+            removeParentClassIdNonio(["gatting_containerLN681a8ea163a8a8224a11839ad9e2b731"]);
+            break;
+
+        case "www.record.pt":
+            removeParentClassIdNonio(["gatting_containerLN77d9bcae3d4b659b33972c248486698f"]);
             break;
 
         case "www.dinheirovivo.pt":
@@ -110,10 +117,6 @@ function removeNonio(hostname) {
         case "rr.sapo.pt":
         case "rfm.sapo.pt":
             removeParentClassIdNonio(["maskContentGatingNonio"]);
-            break;
-
-        case "www.sabado.pt":
-            removeParentClassIdNonio(["gatting_containerLN681a8ea163a8a8224a11839ad9e2b731"]);
             break;
 
         case "megahits.sapo.pt":
