@@ -1,5 +1,6 @@
 // https://gist.github.com/prasanthj/a5b71c47ee0dec3bbb72
 // https://gist.github.com/jlong/2428561#file-uri-js
+// https://stackoverflow.com/a/9851769 browser detection
 
 
 // chrome.runtime.onInstalled.addListener(function () {
@@ -26,31 +27,70 @@
 // });
 
 
-let tabID = null;
+let isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+let isFirefox = typeof InstallTrigger !== 'undefined';
 
-    // console.log("ID: ", tabId);
-    // console.log("Info: ", changeInfo);
-    // console.log("Tab: ", tab);
+// Internet Explorer 6-11
+let isIE = !!document.documentMode;
 
-    if (changeInfo.status === "complete") {
-        let url = tab.url;
-        let parser = document.createElement("a");
-        parser.href = url;
+let isEdge = !isIE && !!window.StyleMedia;
 
-        // console.log("URL: ", url);
-        // console.log("Parser: ", parser.hostname);
 
-        // tabID = tab.index;
-        // console.log("Index: ", tab.index);
-        // console.log("Index2 : ", tab.id);
+if (isFirefox || isEdge) {
 
-        removeNonio(parser.hostname);
-    }
+    console.log("I'm other");
 
-});
+    browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
+        // console.log("ID: ", tabId);
+        // console.log("Info: ", changeInfo);
+        // console.log("Tab: ", tab);
+
+        if (changeInfo.status === "complete") {
+            start(tab.url);
+        }
+    });
+
+    browser.browserAction.onClicked.addListener(function (tab) {
+        start(tab.url);
+    })
+
+
+} else if (isChrome) {
+
+    console.log("I'm Chrome");
+
+    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+
+        if (changeInfo.status === "complete") {
+            start(tab.url);
+        }
+    });
+
+
+    chrome.browserAction.onClicked.addListener(function (tab) {
+
+        // console.log("Tab: ", tab);
+        start(tab.url);
+
+        // chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        //     start(tabs[0].url);
+        // });
+
+    });
+
+}
+
+
+function start(url) {
+    let parser = document.createElement("a");
+    parser.href = url;
+
+    // console.log("Parser: ", parser.hostname);
+
+    removeNonio(parser.hostname);
+}
 
 function removeNonio(hostname) {
     // console.log("Vou remover de ", hostname);
@@ -74,18 +114,15 @@ function removeNonio(hostname) {
         case "www.cmjornal.pt":
         case "www.classificadoscm.pt":
         case "www.flash.pt":
-        case "www.jornaldenegocios.pt":
         case "www.maxima.pt":
         case "www.vidas.pt":
             removeParentClassIdNonio(["gatting_container"]);
             break;
 
         case "www.sabado.pt":
-            removeParentClassIdNonio(["gatting_containerLN681a8ea163a8a8224a11839ad9e2b731"]);
-            break;
-
         case "www.record.pt":
-            removeParentClassIdNonio(["gatting_containerLN77d9bcae3d4b659b33972c248486698f"]);
+        case "www.jornaldenegocios.pt":
+            removeIdNonio(["layer_gattingLN77d9bcae3d4b659b33972c248486698f"]);
             break;
 
         case "www.dinheirovivo.pt":
@@ -93,9 +130,8 @@ function removeNonio(hostname) {
         case "www.noticiasmagazine.pt":
         case "www.evasoes.pt":
         case "www.tsf.pt":
-            removeIframesNonio();
+            removeIframeNonio();
             break;
-
 
         case "expresso.pt":
             removeIdNonio(["imp-content-gate-root"]);
@@ -116,19 +152,20 @@ function removeNonio(hostname) {
 
         case "rr.sapo.pt":
         case "rfm.sapo.pt":
+        case "megahits.sapo.pt":
             removeParentClassIdNonio(["maskContentGatingNonio"]);
             break;
 
-        case "megahits.sapo.pt":
-            removeParentClassIdNonio("maskContentGatingNonio");
-            break;
-
         case "blitz.pt":
-            removeIframesNonio();
+
             removeClassNonio(["_3uC1ta_PlzWRINX9igoXs- brand__blitz"]);
+            removeIdNonio(["imp-content-gate-root"]);
+
+            // https://blitz.pt/principal/update/2019-06-26-Limp-Bizkit-Temple-of-The-Dog-e-muitos-outros.-A-lista-dos-lesados-do-incendio-da-Universal-nao-para-de-crescer
             break;
 
         case "www.sic.pt":
+        case "sic.pt":
         case "sicradical.pt":
         case "sickapa.pt":
         case "siccaras.pt":
@@ -141,6 +178,9 @@ function removeNonio(hostname) {
 
         case "sicnoticias.pt":
             removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicnot"]);
+            break;
+
+        default:
             break;
     }
 }
@@ -163,7 +203,6 @@ function removeClass(elemName) {
         });
         ativateScrolsBar();
     });
-
 }
 
 function removeClassNonio(remArray) {
@@ -188,7 +227,7 @@ function removeIdNonio(remArray) {
     }
 }
 
-function removeIframesNonio() {
+function removeIframeNonio() {
     chrome.tabs.query({active: true, currentWindow: true}, function () {
         chrome.tabs.executeScript(null, {
             code: 'document.querySelectorAll("iframe").forEach(e => e.remove());'
@@ -200,7 +239,10 @@ function removeIframesNonio() {
 function ativateScrolsBar() {
     chrome.tabs.executeScript({
         code:
+            'console.log("Aqui scroll"); ' +
             'document.getElementsByTagName("body")[0].style = "overflow:auto !important"; ' +
             'document.getElementsByTagName("html")[0].style = "overflow:auto !important";'
+    }, function (result) {
+        console.log("Result");
     });
 }
