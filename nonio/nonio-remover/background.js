@@ -93,7 +93,6 @@ function start(url) {
 }
 
 function removeNonio(hostname) {
-    // console.log("Vou remover de ", hostname);
 
     switch (hostname) {
 
@@ -157,11 +156,8 @@ function removeNonio(hostname) {
             break;
 
         case "blitz.pt":
-
             removeClassNonio(["_3uC1ta_PlzWRINX9igoXs- brand__blitz"]);
             removeIdNonio(["imp-content-gate-root"]);
-
-            // https://blitz.pt/principal/update/2019-06-26-Limp-Bizkit-Temple-of-The-Dog-e-muitos-outros.-A-lista-dos-lesados-do-incendio-da-Universal-nao-para-de-crescer
             break;
 
         case "www.sic.pt":
