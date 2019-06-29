@@ -41,6 +41,8 @@ if (isFirefox || isEdge) {
 
     console.log("I'm other");
 
+    isChrome = false;
+
     browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
         // console.log("ID: ", tabId);
@@ -156,8 +158,10 @@ function removeNonio(hostname) {
             break;
 
         case "blitz.pt":
-            removeClassNonio(["_3uC1ta_PlzWRINX9igoXs- brand__blitz"]);
             removeIdNonio(["imp-content-gate-root"]);
+
+            /* alternative */
+            // removeClassNonio(["_3uC1ta_PlzWRINX9igoXs- brand__blitz"]);
             break;
 
         case "www.sic.pt":
@@ -183,22 +187,42 @@ function removeNonio(hostname) {
 
 
 function removeParentClassIdNonio(elemName) {
-    chrome.tabs.query({active: true, currentWindow: true}, function () {
-        chrome.tabs.executeScript({
-            code: 'document.getElementsByClassName("' + elemName + '")[0].parentElement.remove();'
+
+    if (isChrome) {
+        chrome.tabs.query({active: true, currentWindow: true}, function () {
+            chrome.tabs.executeScript({
+                code: 'document.getElementsByClassName("' + elemName + '")[0].parentElement.remove();'
+            });
         });
-        ativateScrolsBar();
-    });
+    } else if (isFirefox) {
+        browser.tabs.query({active: true, currentWindow: true}, function () {
+            browser.tabs.executeScript({
+                code: 'document.getElementsByClassName("' + elemName + '")[0].parentElement.remove();'
+            });
+        });
+    }
+
+    activateScrollBars();
 }
 
 
 function removeClass(elemName) {
-    chrome.tabs.query({active: true, currentWindow: true}, function () {
-        chrome.tabs.executeScript({
-            code: 'document.getElementsByClassName("' + elemName + '")[0].remove();'
+
+    if (isChrome) {
+        chrome.tabs.query({active: true, currentWindow: true}, function () {
+            chrome.tabs.executeScript({
+                code: 'document.getElementsByClassName("' + elemName + '")[0].remove();'
+            });
         });
-        ativateScrolsBar();
-    });
+    } else if (isFirefox) {
+        browser.tabs.query({active: true, currentWindow: true}, function () {
+            browser.tabs.executeScript({
+                code: 'document.getElementsByClassName("' + elemName + '")[0].remove();'
+            });
+        });
+    }
+
+    activateScrollBars();
 }
 
 function removeClassNonio(remArray) {
@@ -214,31 +238,63 @@ function removeClassNonio(remArray) {
 
 function removeIdNonio(remArray) {
     for (let i = 0; i < remArray.length; i++) {
-        chrome.tabs.query({active: true, currentWindow: true}, function () {
-            chrome.tabs.executeScript({
-                code: 'document.getElementById("' + remArray[i] + '").remove();'
+
+        if (isChrome) {
+            chrome.tabs.query({active: true, currentWindow: true}, function () {
+                chrome.tabs.executeScript({
+                    code: 'document.getElementById("' + remArray[i] + '").remove();'
+                });
             });
-            ativateScrolsBar();
-        });
+        } else if (isFirefox) {
+            browser.tabs.query({active: true, currentWindow: true}, function () {
+                browser.tabs.executeScript({
+                    code: 'document.getElementById("' + remArray[i] + '").remove();'
+                });
+            });
+        }
+
+        activateScrollBars();
     }
 }
 
 function removeIframeNonio() {
-    chrome.tabs.query({active: true, currentWindow: true}, function () {
-        chrome.tabs.executeScript(null, {
-            code: 'document.querySelectorAll("iframe").forEach(e => e.remove());'
+
+    if (isChrome) {
+        chrome.tabs.query({active: true, currentWindow: true}, function () {
+            chrome.tabs.executeScript(null, {
+                code: 'document.querySelectorAll("iframe").forEach(e => e.remove());'
+            });
         });
-        ativateScrolsBar();
-    });
+    } else if (isFirefox) {
+        browser.tabs.query({active: true, currentWindow: true}, function () {
+            browser.tabs.executeScript(null, {
+                code: 'document.querySelectorAll("iframe").forEach(e => e.remove());'
+            });
+        });
+    }
+
+    activateScrollBars();
 }
 
-function ativateScrolsBar() {
-    chrome.tabs.executeScript({
-        code:
-            'console.log("Aqui scroll"); ' +
-            'document.getElementsByTagName("body")[0].style = "overflow:auto !important"; ' +
-            'document.getElementsByTagName("html")[0].style = "overflow:auto !important";'
-    }, function (result) {
-        console.log("Result");
-    });
+function activateScrollBars() {
+
+    if (isChrome) {
+        chrome.tabs.executeScript({
+            code:
+                'console.log("Aqui scroll"); ' +
+                'document.getElementsByTagName("body")[0].style = "overflow:auto !important"; ' +
+                'document.getElementsByTagName("html")[0].style = "overflow:auto !important";'
+        }, function (result) {
+            console.log("Result: ", result);
+        });
+    } else if (isFirefox) {
+        browser.tabs.executeScript({
+            code:
+                'console.log("Aqui scroll"); ' +
+                'document.getElementsByTagName("body")[0].style = "overflow:auto !important"; ' +
+                'document.getElementsByTagName("html")[0].style = "overflow:auto !important";'
+        }, function (result) {
+            console.log("Result: ", result);
+        });
+    }
 }
