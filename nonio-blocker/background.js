@@ -1,8 +1,3 @@
-// https://gist.github.com/prasanthj/a5b71c47ee0dec3bbb72
-// https://gist.github.com/jlong/2428561#file-uri-js
-// https://stackoverflow.com/a/9851769 browser detection
-
-
 // chrome.runtime.onInstalled.addListener(function () {
 //     try {
 //         let thisVersion = chrome.runtime.getManifest().version;
@@ -25,8 +20,6 @@
 //         console.info("OnInstall Error - " + e);
 //     }
 // });
-
-let tabURL = "";
 
 let isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
