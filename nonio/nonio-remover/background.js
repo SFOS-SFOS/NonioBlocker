@@ -26,6 +26,7 @@
 //     }
 // });
 
+let tabURL = "";
 
 let isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
@@ -39,15 +40,11 @@ let isEdge = !isIE && !!window.StyleMedia;
 
 if (isFirefox || isEdge) {
 
-    console.log("I'm other");
+    // console.log("I'm other");
 
     isChrome = false;
 
     browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-
-        // console.log("ID: ", tabId);
-        // console.log("Info: ", changeInfo);
-        // console.log("Tab: ", tab);
 
         if (changeInfo.status === "complete") {
             start(tab.url);
@@ -61,7 +58,7 @@ if (isFirefox || isEdge) {
 
 } else if (isChrome) {
 
-    console.log("I'm Chrome");
+    // console.log("I'm Chrome");
 
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
@@ -72,26 +69,35 @@ if (isFirefox || isEdge) {
 
 
     chrome.browserAction.onClicked.addListener(function (tab) {
-
-        // console.log("Tab: ", tab);
         start(tab.url);
-
-        // chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        //     start(tabs[0].url);
-        // });
-
     });
+
+    chrome.tabs.onActivated.addListener(function (activeInfo) {
+        chrome.tabs.get(activeInfo.tabId, function (tab) {
+            start(tab.url);
+        });
+
+        chrome.tabs.query({currentWindow: true}, function (tabs) {
+            for (let i = 0; i < tabs.length; i++) {
+                start(tabs[i].url);
+            }
+        });
+    })
 
 }
 
 
 function start(url) {
-    let parser = document.createElement("a");
-    parser.href = url;
 
-    // console.log("Parser: ", parser.hostname);
+    if (url.substring(0, 4).toLowerCase() === "http") {
 
-    removeNonio(parser.hostname);
+        let parser = document.createElement("a");
+        parser.href = url;
+
+        console.log("Host: ", parser.hostname);
+
+        removeNonio(parser.hostname);
+    }
 }
 
 function removeNonio(hostname) {
@@ -134,8 +140,11 @@ function removeNonio(hostname) {
             removeIframeNonio();
             break;
 
+        case "blitz.pt":
         case "expresso.pt":
-            removeIdNonio(["imp-content-gate-root"]);
+            setIntervalX(function () {
+                removeIdNonio(["imp-content-gate-root"]);
+            }, 2000, 10);
             break;
 
         case "autoportal.iol.pt":
@@ -157,11 +166,12 @@ function removeNonio(hostname) {
             removeParentClassIdNonio(["maskContentGatingNonio"]);
             break;
 
-        case "blitz.pt":
-            removeIdNonio(["imp-content-gate-root"]);
+        case "sicmulher.pt":
+            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicmul"]);
+            break;
 
-            /* alternative */
-            // removeClassNonio(["_3uC1ta_PlzWRINX9igoXs- brand__blitz"]);
+        case "sicnoticias.pt":
+            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicnot"]);
             break;
 
         case "www.sic.pt":
@@ -170,14 +180,6 @@ function removeNonio(hostname) {
         case "sickapa.pt":
         case "siccaras.pt":
             removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sic"]);
-            break;
-
-        case "sicmulher.pt":
-            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicmul"]);
-            break;
-
-        case "sicnoticias.pt":
-            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicnot"]);
             break;
 
         default:
@@ -192,6 +194,8 @@ function removeParentClassIdNonio(elemName) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript({
                 code: 'document.getElementsByClassName("' + elemName + '")[0].parentElement.remove();'
+            }, function () {
+                catchChromeException();
             });
         });
     } else if (isFirefox) {
@@ -212,6 +216,8 @@ function removeClass(elemName) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript({
                 code: 'document.getElementsByClassName("' + elemName + '")[0].remove();'
+            }, function () {
+                catchChromeException();
             });
         });
     } else if (isFirefox) {
@@ -243,6 +249,8 @@ function removeIdNonio(remArray) {
             chrome.tabs.query({active: true, currentWindow: true}, function () {
                 chrome.tabs.executeScript({
                     code: 'document.getElementById("' + remArray[i] + '").remove();'
+                }, function () {
+                    catchChromeException();
                 });
             });
         } else if (isFirefox) {
@@ -263,6 +271,8 @@ function removeIframeNonio() {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript(null, {
                 code: 'document.querySelectorAll("iframe").forEach(e => e.remove());'
+            }, function () {
+                catchChromeException();
             });
         });
     } else if (isFirefox) {
@@ -281,20 +291,38 @@ function activateScrollBars() {
     if (isChrome) {
         chrome.tabs.executeScript({
             code:
-                'console.log("Aqui scroll"); ' +
                 'document.getElementsByTagName("body")[0].style = "overflow:auto !important"; ' +
                 'document.getElementsByTagName("html")[0].style = "overflow:auto !important";'
-        }, function (result) {
-            console.log("Result: ", result);
+        }, function () {
+            catchChromeException();
         });
     } else if (isFirefox) {
         browser.tabs.executeScript({
             code:
-                'console.log("Aqui scroll"); ' +
                 'document.getElementsByTagName("body")[0].style = "overflow:auto !important"; ' +
                 'document.getElementsByTagName("html")[0].style = "overflow:auto !important";'
         }, function (result) {
-            console.log("Result: ", result);
+
         });
+    }
+}
+
+function setIntervalX(callback, delay, repetitions) {
+    let i = 0;
+    let interval = window.setInterval(function () {
+
+        callback();
+
+        if (++i === repetitions) {
+            window.clearInterval(interval);
+        }
+
+    }, delay);
+}
+
+function catchChromeException() {
+    let e = chrome.runtime.lastError;
+    if (e !== undefined) {
+        // console.log("Exception: ", e);
     }
 }

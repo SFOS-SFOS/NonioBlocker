@@ -1,13 +1,11 @@
 {
   "name": "Remover Nonio",
   "version": "2.0.7",
-  "description": "Remover pedido de registo da Nonio",
+  "description": "Remove o pedido de registo na Nonio",
   "permissions": [
     "activeTab",
-    "declarativeContent",
-    "storage",
     "tabs",
-    "https://*/*"
+    "*://*/*"
   ],
   "background": {
     "scripts": [
