@@ -1,3 +1,4 @@
 .git
-nonio-blocker/.idea
+.idea
+.idea/
 *.pem

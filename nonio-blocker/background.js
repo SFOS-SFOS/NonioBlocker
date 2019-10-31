@@ -23,12 +23,11 @@
 
 let isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
-let isFirefox = typeof InstallTrigger !== 'undefined';
+const isFirefox = typeof InstallTrigger !== 'undefined';
 
 // Internet Explorer 6-11
-let isIE = !!document.documentMode;
-
-let isEdge = !isIE && !!window.StyleMedia;
+const isIE = !!document.documentMode;
+const isEdge = !isIE && !!window.StyleMedia;
 
 
 if (isFirefox || isEdge) {
