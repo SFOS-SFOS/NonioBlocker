@@ -65,17 +65,18 @@ if (isFirefox || isEdge) {
         start(tab.url);
     });
 
+
     chrome.tabs.onActivated.addListener(function (activeInfo) {
         chrome.tabs.get(activeInfo.tabId, function (tab) {
             start(tab.url);
         });
 
-        chrome.tabs.query({currentWindow: true}, function (tabs) {
-            for (let i = 0; i < tabs.length; i++) {
-                start(tabs[i].url);
-            }
-        });
-    })
+        // chrome.tabs.query({currentWindow: true}, function (tabs) {
+        //     for (let i = 0; i < tabs.length; i++) {
+        //         start(tabs[i].url);
+        //     }
+        // });
+    });
 
 }
 
@@ -120,9 +121,9 @@ function removeNonio(hostname) {
             break;
 
         case "www.sabado.pt":
-        case "www.record.pt":
         case "www.jornaldenegocios.pt":
-            removeIdNonio(["layer_gattingLN77d9bcae3d4b659b33972c248486698f"]);
+        case "www.record.pt":
+            removeIdNonio(["layer_gattingLN8d9888cbd84302e0b435be46bd48b3fa", "layer_gattingLNeb6eb7e1f63306dc6c026d2c156f69e4"]);
             break;
 
         case "www.dinheirovivo.pt":
@@ -137,7 +138,7 @@ function removeNonio(hostname) {
         case "expresso.pt":
             setIntervalX(function () {
                 removeIdNonio(["imp-content-gate-root"]);
-            }, 2000, 10);
+            }, 500, 50);
             break;
 
         case "autoportal.iol.pt":
@@ -157,6 +158,7 @@ function removeNonio(hostname) {
         case "rfm.sapo.pt":
         case "megahits.sapo.pt":
             removeParentClassIdNonio(["maskContentGatingNonio"]);
+            removeIdNonio("gig_1572557683568_showScreenSet");
             break;
 
         case "sicmulher.pt":
@@ -233,7 +235,6 @@ function removeClassNonio(remArray) {
         }
     }
 }
-
 
 function removeIdNonio(remArray) {
     for (let i = 0; i < remArray.length; i++) {
