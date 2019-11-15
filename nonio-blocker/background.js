@@ -96,6 +96,12 @@ function removeNonio(hostname) {
             break;
 
         case "www.jn.pt":
+            removeClassNonio(["tp-modal", "tp-backdrop"]);
+            setIntervalX(function () {
+                removeIdNonio(["template-container", "ng-app"]);
+            }, 500, 10);
+            break;
+
         case "www.ojogo.pt":
             removeClassNonio(["tp-modal", "tp-backdrop"]);
             break;
@@ -174,7 +180,7 @@ function removeNonio(hostname) {
         case "www.zerozero.pt":
             removeIdNonio(["ad_block_msg"]);
             removeClass("zz-tkvr");
-			removeParentId(["qcCmpUi"]);
+            removeParentId(["qcCmpUi"]);
             break;
 
         case "www.symbolab.com":
@@ -186,6 +192,12 @@ function removeNonio(hostname) {
 
         case "contaspoupanca.pt":
             removeIdNonio(["newsletter-bt", "x", "spu-4164", "spu-bg-4164", "wow-modal-overlay-1", "onesignal-bell-container"]);
+            break;
+
+        case "www.sapo.pt":
+            setIntervalX(function () {
+                removeParentId(["qcCmpUi"]);
+            }, 500, 10);
             break;
 
         default:
