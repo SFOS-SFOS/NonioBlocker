@@ -71,7 +71,6 @@ if (isFirefox || isEdge) {
         //     }
         // });
     });
-
 }
 
 
@@ -117,7 +116,8 @@ function removeNonio(hostname) {
         case "www.sabado.pt":
         case "www.jornaldenegocios.pt":
         case "www.record.pt":
-            removeIdNonio(["layer_gattingLN8d9888cbd84302e0b435be46bd48b3fa", "layer_gattingLNeb6eb7e1f63306dc6c026d2c156f69e4"]);
+            removeIdNonio(["layer_gattingLN8d9888cbd84302e0b435be46bd48b3fa", "layer_gattingLNeb6eb7e1f63306dc6c026d2c156f69e4", "layer_gattingLNfe5cfbf2fc69199b9a7d91f50f16688e"]);
+            removeGrandpaID(["gatting_info"]);
             break;
 
         case "www.dinheirovivo.pt":
@@ -152,8 +152,6 @@ function removeNonio(hostname) {
         case "rfm.sapo.pt":
         case "megahits.sapo.pt":
             removeParentClassIdNonio(["maskContentGatingNonio"]);
-            // removeIdNonio(["gig_1572557683568_showScreenSet", "gig_1572557925912_showScreenSet"]);
-
             removeParentId(["gigya-screen-dialog-page-overlay"]);
             break;
 
@@ -171,6 +169,26 @@ function removeNonio(hostname) {
         case "sickapa.pt":
         case "siccaras.pt":
             removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sic"]);
+            break;
+
+        case "www.zerozero.pt":
+            removeIdNonio(["ad_block_msg"]);
+            removeClass("zz-tkvr");
+            break;
+
+        case "www.symbolab.com":
+            removeClass("tooltipster-base");
+            // setTimeout(function () {
+            //     removeClass("tooltipster-base");
+            // }, 2000);
+
+            setIntervalX(function () {
+                removeClass("tooltipster-base");
+            }, 500, 10);
+            break;
+
+        case "contaspoupanca.pt":
+            removeIdNonio(["newsletter-bt", "x", "spu-4164", "spu-bg-4164", "wow-modal-overlay-1", "onesignal-bell-container"]);
             break;
 
         default:
@@ -278,7 +296,6 @@ function removeIframeNonio() {
 
 function removeParentId(array) {
     for (let i = 0; i < array.length; i++) {
-
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript({
                 code: 'document.getElementById("' + array[i] + '").parentElement.remove();'
@@ -286,8 +303,21 @@ function removeParentId(array) {
 
             });
         });
-        // document.getElementById("gigya-screen-dialog-page-overlay").parentElement.remove();
     }
+}
+
+function removeGrandpaID(array) {
+    for (let i = 0; i < array.length; i++) {
+        chrome.tabs.query({active: true, currentWindow: true}, function () {
+            chrome.tabs.executeScript({
+                code: 'document.getElementByClassName("' + array[i] + '")[0].parentElement.parentElement.remove();'
+            }, function () {
+
+            });
+        });
+    }
+
+    activateScrollBars();
 }
 
 function activateScrollBars() {
