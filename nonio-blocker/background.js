@@ -174,14 +174,11 @@ function removeNonio(hostname) {
         case "www.zerozero.pt":
             removeIdNonio(["ad_block_msg"]);
             removeClass("zz-tkvr");
+			removeParentId(["qcCmpUi"]);
             break;
 
         case "www.symbolab.com":
             removeClass("tooltipster-base");
-            // setTimeout(function () {
-            //     removeClass("tooltipster-base");
-            // }, 2000);
-
             setIntervalX(function () {
                 removeClass("tooltipster-base");
             }, 500, 10);
