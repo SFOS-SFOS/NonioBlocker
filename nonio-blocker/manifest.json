@@ -1,6 +1,6 @@
 {
   "name": "Remover Nonio",
-  "version": "2.0.8",
+  "version": "2.0.11",
   "description": "Remove o pedido de registo na Nonio e outros elementos irritantes",
   "permissions": [
     "activeTab",

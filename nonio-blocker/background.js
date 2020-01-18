@@ -28,6 +28,7 @@ let isFirefox = typeof InstallTrigger !== 'undefined';
 let isIE = !!document.documentMode;
 let isEdge = !isIE && !!window.StyleMedia;
 
+const DEBUG = true;
 
 if (isFirefox || isEdge) {
 
@@ -48,7 +49,6 @@ if (isFirefox || isEdge) {
 } else if (isChrome) {
 
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-
         if (changeInfo.status === "complete") {
             start(tab.url);
         }
@@ -83,31 +83,31 @@ function start(url) {
 
         console.log("Host: ", parser.hostname);
 
-        removeNonio(parser.hostname);
+        removeAds(parser.hostname);
     }
 }
 
-function removeNonio(hostname) {
+function removeAds(hostname) {
 
     switch (hostname) {
 
         case "www.publico.pt":
-            removeClassNonio(["warning-nonio-overlay"]);
+            removeClass(["warning-nonio-overlay"]);
             break;
 
         case "www.jn.pt":
-            removeClassNonio(["tp-modal", "tp-backdrop"]);
+            removeClass(["tp-modal", "tp-backdrop"]);
             setIntervalX(function () {
-                removeIdNonio(["template-container", "ng-app"]);
+                removeElementsByID(["template-container", "ng-app"]);
             }, 500, 10);
             break;
 
         case "www.ojogo.pt":
-            removeClassNonio(["tp-modal", "tp-backdrop"]);
+            removeClass(["tp-modal", "tp-backdrop"]);
             break;
 
         case "www.dn.pt":
-            removeClassNonio(["tp-modal", "tp-backdrop tp-active"]);
+            removeClass(["tp-modal", "tp-backdrop tp-active"]);
             break;
 
         case "www.aquelamaquina.pt":
@@ -116,14 +116,18 @@ function removeNonio(hostname) {
         case "www.flash.pt":
         case "www.maxima.pt":
         case "www.vidas.pt":
-            removeParentClassIdNonio(["gatting_container"]);
+        case "www.cm-tv.pt":
+            removeClassParent(["gatting_container"]);
+            deleteCofinaExtra();
+            deleteGDPRCookiesPopup();
             break;
 
         case "www.sabado.pt":
         case "www.jornaldenegocios.pt":
         case "www.record.pt":
-            removeIdNonio(["layer_gattingLN8d9888cbd84302e0b435be46bd48b3fa", "layer_gattingLNeb6eb7e1f63306dc6c026d2c156f69e4", "layer_gattingLNfe5cfbf2fc69199b9a7d91f50f16688e"]);
-            removeGrandpaID(["gatting_info"]);
+            removeElementsGrandpaByID(["gatting_info"]);
+            deleteCofinaExtra();
+            deleteGDPRCookiesPopup();
             break;
 
         case "www.dinheirovivo.pt":
@@ -131,14 +135,15 @@ function removeNonio(hostname) {
         case "www.noticiasmagazine.pt":
         case "www.evasoes.pt":
         case "www.tsf.pt":
-            removeIframeNonio();
+            removeNonioIframe();
             break;
 
         case "blitz.pt":
         case "expresso.pt":
             setIntervalX(function () {
-                removeIdNonio(["imp-content-gate-root"]);
-            }, 500, 50);
+                removeElementsByID(["imp-content-gate-root"]);
+            }, 500, 10);
+            deleteGDPRCookiesPopup();
             break;
 
         case "autoportal.iol.pt":
@@ -151,22 +156,24 @@ function removeNonio(hostname) {
         case "cidade.iol.pt":
         case "m80.iol.pt":
         case "tviplayer.iol.pt":
-            removeClassNonio(["nonioBox"]);
+            removeClass(["nonioBox"]);
+            removeElementsByID(["wrapperContentGatingNonio"]);
+            deleteGDPRCookiesPopup();
             break;
 
         case "rr.sapo.pt":
         case "rfm.sapo.pt":
         case "megahits.sapo.pt":
-            removeParentClassIdNonio(["maskContentGatingNonio"]);
-            removeParentId(["gigya-screen-dialog-page-overlay"]);
+            removeClassParent(["maskContentGatingNonio"]);
+            removeElementsParentByID(["gigya-screen-dialog-page-overlay"]);
             break;
 
         case "sicmulher.pt":
-            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicmul"]);
+            removeClassParent(["_3uC1ta_PlzWRINX9igoXs- brand__sicmul"]);
             break;
 
         case "sicnoticias.pt":
-            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sicnot"]);
+            removeClassParent(["_3uC1ta_PlzWRINX9igoXs- brand__sicnot"]);
             break;
 
         case "www.sic.pt":
@@ -174,39 +181,70 @@ function removeNonio(hostname) {
         case "sicradical.pt":
         case "sickapa.pt":
         case "siccaras.pt":
-            removeParentClassIdNonio(["_3uC1ta_PlzWRINX9igoXs- brand__sic"]);
+            removeClassParent(["_3uC1ta_PlzWRINX9igoXs- brand__sic"]);
             break;
 
         case "www.zerozero.pt":
-            removeIdNonio(["ad_block_msg"]);
-            removeClass("zz-tkvr");
-            removeParentId(["qcCmpUi"]);
+            setIntervalX(function () {
+                removeElementsByID(["ad_block_msg"]);
+                removeClass("zz-tkvr");
+                deleteGDPRCookiesPopup();
+            }, 500, 10);
+
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                if (DEBUG) {
+                    console.log("Tabs: ", tabs);
+                    console.log("Zerozero?: ", tabs[0].url);
+                }
+                if (tabs.length > 0) {
+                    muteTab(tabs[0].id);
+                }
+            });
             break;
 
         case "www.symbolab.com":
-            removeClass("tooltipster-base");
             setIntervalX(function () {
-                removeClass("tooltipster-base");
-            }, 500, 10);
+                removeClassParent("tooltipster-box");
+            }, 500, 20);
             break;
 
         case "contaspoupanca.pt":
-            removeIdNonio(["newsletter-bt", "x", "spu-4164", "spu-bg-4164", "wow-modal-overlay-1", "onesignal-bell-container"]);
+            removeElementsByID(["newsletter-bt", "x", "spu-4164", "spu-bg-4164", "wow-modal-overlay-1", "onesignal-bell-container"]);
             break;
 
-        case "www.sapo.pt":
-            setIntervalX(function () {
-                removeParentId(["qcCmpUi"]);
-            }, 500, 10);
-            break;
 
         default:
+            if (hostname.endsWith("sapo.pt")) {
+                deleteGDPRCookiesPopup();
+            } else if (hostname.endsWith("facebook.com")) {
+                removeClass("_5hn6");
+            }
             break;
     }
 }
 
+function muteTab(tabID) {
+    if (DEBUG) {
+        chrome.tabs.update(tabID, {"muted": true}, function (tab) {
+            console.log("New tab settings: ", tab);
+        });
+    } else {
+        chrome.tabs.update(tabID, {"muted": true});
+    }
+}
 
-function removeParentClassIdNonio(elemName) {
+function deleteCofinaExtra() {
+    chrome.tabs.query({active: true, currentWindow: true}, function () {
+        chrome.tabs.executeScript({
+            code: 'document.getElementById("notificacao").remove();' +
+                'document.getElementById("frmLogin").parentElement.parentElement.parentElement.remove();'
+        }, function () {
+            catchChromeException();
+        });
+    });
+}
+
+function removeClassParent(elemName) {
 
     if (isChrome) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
@@ -228,44 +266,39 @@ function removeParentClassIdNonio(elemName) {
 }
 
 
-function removeClass(elemName) {
+function removeClass(array) {
 
-    if (isChrome) {
-        chrome.tabs.query({active: true, currentWindow: true}, function () {
-            chrome.tabs.executeScript({
-                code: 'document.getElementsByClassName("' + elemName + '")[0].remove();'
-            }, function () {
-                catchChromeException();
-            });
-        });
-    } else if (isFirefox) {
-        browser.tabs.query({active: true, currentWindow: true}, function () {
-            browser.tabs.executeScript({
-                code: 'document.getElementsByClassName("' + elemName + '")[0].remove();'
-            });
-        });
-    }
-
-    activateScrollBars();
-}
-
-function removeClassNonio(remArray) {
-    for (let i = 0; i < remArray.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         try {
-            removeClass(remArray[i]);
+            if (isChrome) {
+                chrome.tabs.query({active: true, currentWindow: true}, function () {
+                    chrome.tabs.executeScript({
+                        code: 'document.getElementsByClassName("' + array[i] + '")[0].remove();'
+                    }, function () {
+                        catchChromeException();
+                    });
+                });
+            } else if (isFirefox) {
+                browser.tabs.query({active: true, currentWindow: true}, function () {
+                    browser.tabs.executeScript({
+                        code: 'document.getElementsByClassName("' + array[i] + '")[0].remove();'
+                    });
+                });
+            }
         } catch (error) {
             console.log("ERROR: ", error);
         }
     }
+
+    activateScrollBars();
 }
 
-function removeIdNonio(remArray) {
-    for (let i = 0; i < remArray.length; i++) {
-
+function removeElementsByID(array) {
+    for (let i = 0; i < array.length; i++) {
         if (isChrome) {
             chrome.tabs.query({active: true, currentWindow: true}, function () {
                 chrome.tabs.executeScript({
-                    code: 'document.getElementById("' + remArray[i] + '").remove();'
+                    code: 'document.getElementById("' + array[i] + '").remove();'
                 }, function () {
                     catchChromeException();
                 });
@@ -273,16 +306,15 @@ function removeIdNonio(remArray) {
         } else if (isFirefox) {
             browser.tabs.query({active: true, currentWindow: true}, function () {
                 browser.tabs.executeScript({
-                    code: 'document.getElementById("' + remArray[i] + '").remove();'
+                    code: 'document.getElementById("' + array[i] + '").remove();'
                 });
             });
         }
-
-        activateScrollBars();
     }
+    activateScrollBars();
 }
 
-function removeIframeNonio() {
+function removeNonioIframe() {
 
     if (isChrome) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
@@ -303,23 +335,33 @@ function removeIframeNonio() {
     activateScrollBars();
 }
 
-function removeParentId(array) {
+function removeElementsParentByID(array) {
     for (let i = 0; i < array.length; i++) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript({
                 code: 'document.getElementById("' + array[i] + '").parentElement.remove();'
-            }, function () {
-
+                // code: "try {" +
+                //     "document.getElementById(\"' + array[i] + '\").parentElement.remove();" +
+                //     "} catch (error) {" +
+                //     "console.log(\"Error: \", error)" +
+                //     "}"
+            }, function (arrayOfResults) {
+                if (arrayOfResults !== undefined && arrayOfResults.length > 0) {
+                    if (DEBUG && arrayOfResults[0] != null) {
+                        console.log("Result: ", arrayOfResults);
+                    }
+                }
+                // console.log("Error in here: ", chrome.runtime);
             });
         });
     }
 }
 
-function removeGrandpaID(array) {
+function removeElementsGrandpaByID(array) {
     for (let i = 0; i < array.length; i++) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript({
-                code: 'document.getElementByClassName("' + array[i] + '")[0].parentElement.parentElement.remove();'
+                code: 'document.getElementsByClassName("' + array[i] + '")[0].parentElement.parentElement.remove();'
             }, function () {
 
             });
@@ -350,6 +392,15 @@ function activateScrollBars() {
     }
 }
 
+
+function deleteGDPRCookiesPopup() {
+    setIntervalX(function () {
+        removeElementsParentByID(["qcCmpUi"]);
+        activateScrollBars();
+    }, 500, 10);
+}
+
+
 function setIntervalX(callback, delay, repetitions) {
     let i = 0;
     let interval = window.setInterval(function () {
@@ -362,6 +413,7 @@ function setIntervalX(callback, delay, repetitions) {
 
     }, delay);
 }
+
 
 function catchChromeException() {
     let e = chrome.runtime.lastError;
