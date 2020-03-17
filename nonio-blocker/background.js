@@ -64,13 +64,8 @@ if (isFirefox || isEdge) {
         chrome.tabs.get(activeInfo.tabId, function (tab) {
             start(tab.url);
         });
-
-        // chrome.tabs.query({currentWindow: true}, function (tabs) {
-        //     for (let i = 0; i < tabs.length; i++) {
-        //         start(tabs[i].url);
-        //     }
-        // });
     });
+
 }
 
 
@@ -93,6 +88,7 @@ function removeAds(hostname) {
 
         case "www.publico.pt":
             removeClass(["warning-nonio-overlay"]);
+            deleteGDPRCookiesPopup();
             break;
 
         case "www.jn.pt":
@@ -117,11 +113,13 @@ function removeAds(hostname) {
         case "www.maxima.pt":
         case "www.vidas.pt":
         case "www.cm-tv.pt":
-            removeClassParent(["gatting_container"]);
+            removeClassParent("gatting_container");
+            removeElementsGrandpaByID(["gatting_info"]);
             deleteCofinaExtra();
             deleteGDPRCookiesPopup();
             break;
 
+        case "www.abola.pt":
         case "www.sabado.pt":
         case "www.jornaldenegocios.pt":
         case "www.record.pt":
@@ -164,16 +162,16 @@ function removeAds(hostname) {
         case "rr.sapo.pt":
         case "rfm.sapo.pt":
         case "megahits.sapo.pt":
-            removeClassParent(["maskContentGatingNonio"]);
+            removeClassParent("maskContentGatingNonio");
             removeElementsParentByID(["gigya-screen-dialog-page-overlay"]);
             break;
 
         case "sicmulher.pt":
-            removeClassParent(["_3uC1ta_PlzWRINX9igoXs- brand__sicmul"]);
+            removeClassParent("_3uC1ta_PlzWRINX9igoXs- brand__sicmul");
             break;
 
         case "sicnoticias.pt":
-            removeClassParent(["_3uC1ta_PlzWRINX9igoXs- brand__sicnot"]);
+            removeClassParent("_3uC1ta_PlzWRINX9igoXs- brand__sicnot");
             break;
 
         case "www.sic.pt":
@@ -181,13 +179,14 @@ function removeAds(hostname) {
         case "sicradical.pt":
         case "sickapa.pt":
         case "siccaras.pt":
-            removeClassParent(["_3uC1ta_PlzWRINX9igoXs- brand__sic"]);
+            removeClassParent("_3uC1ta_PlzWRINX9igoXs- brand__sic");
+            deleteGDPRCookiesPopup();
             break;
 
         case "www.zerozero.pt":
             setIntervalX(function () {
                 removeElementsByID(["ad_block_msg"]);
-                removeClass("zz-tkvr");
+                removeClass(["zz-tkvr"]);
                 deleteGDPRCookiesPopup();
             }, 500, 10);
 
@@ -212,12 +211,58 @@ function removeAds(hostname) {
             removeElementsByID(["newsletter-bt", "x", "spu-4164", "spu-bg-4164", "wow-modal-overlay-1", "onesignal-bell-container"]);
             break;
 
+        case "www.noticiasaominuto.com":
+        case "observador.pt":
+        case "nit.pt":
+            deleteGDPRCookiesPopup();
+            activateScrollBars();
+            break;
+
+        case "outlook.live.com":
+            chrome.tabs.query({active: true, currentWindow: true}, function () {
+                chrome.tabs.executeScript({
+                    code: 'document.getElementsByClassName("_3_hHr3kfEhbNYRFM5YJxH9")[0].style.width = 0;' +
+                        'document.getElementsByClassName("_2F6rWwLisyawGGg32JOcop")[0].style.width = 0;' +
+                        'document.getElementsByClassName("_2F6rWwLisyawGGg32JOcop")[0].style.height = 0;' +
+                        'document.getElementsByClassName("_3_hHr3kfEhbNYRFM5YJxH9")[1].remove();'
+                }, function () {
+                    catchChromeException();
+                });
+            });
+            break;
+
+        case "medium.com":
+            removeClassParent("branch-journeys-top");
+            removeElementsGrandpaByID(["branch-journeys-top"]);
+            removeClass(["tx", "td"]);
+            break;
+
+        case "jornaleconomico.sapo.pt":
+            removeElementsParentByID(["cookieconsent:desc"]);
+            break;
+
+        case "www.tomsguide.com":
+            removeElementsByID(["cmp-container-id"]);
+            break;
+
+        case "www.msn.com":
+            removeClass(["optanon-alert-box-wrapper"]);
+            break;
+
+        case "pdfill.com":
+        case "www.pdfill.com":
+            chrome.tabs.query({active: true, currentWindow: true}, function (tabResult) {
+                chrome.tabs.remove(tabResult[0].id);
+            });
+            break;
 
         default:
             if (hostname.endsWith("sapo.pt")) {
                 deleteGDPRCookiesPopup();
             } else if (hostname.endsWith("facebook.com")) {
-                removeClass("_5hn6");
+                removeClass(["_5hn6"]);
+            } else if (hostname.endsWith("meo.pt")) {
+                removeElementsByID(["warning_EU_cookiemsg"]);
             }
             break;
     }
