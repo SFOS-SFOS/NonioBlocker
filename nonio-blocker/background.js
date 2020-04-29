@@ -172,6 +172,7 @@ function removeAds(hostname) {
 
         case "sicnoticias.pt":
             removeClassParent("_3uC1ta_PlzWRINX9igoXs- brand__sicnot");
+            removeClass(["qc-cmp-ui-container"]);
             break;
 
         case "www.sic.pt":
@@ -249,13 +250,6 @@ function removeAds(hostname) {
             removeClass(["optanon-alert-box-wrapper"]);
             break;
 
-        case "pdfill.com":
-        case "www.pdfill.com":
-            chrome.tabs.query({active: true, currentWindow: true}, function (tabResult) {
-                chrome.tabs.remove(tabResult[0].id);
-            });
-            break;
-
         default:
             if (hostname.endsWith("sapo.pt")) {
                 deleteGDPRCookiesPopup();
@@ -263,6 +257,22 @@ function removeAds(hostname) {
                 removeClass(["_5hn6"]);
             } else if (hostname.endsWith("meo.pt")) {
                 removeElementsByID(["warning_EU_cookiemsg"]);
+            } else if (hostname.endsWith("onlinesoccermanager.com")) {
+                removeElementsByID(["advertisement-leaderboard-container"]);
+                removeClass(["col-h-xs-11"]);
+                setIntervalX(function () {
+                    removeClass(["anti-adblocker-warning"]);
+                    chrome.tabs.query({active: true, currentWindow: true}, function () {
+                        chrome.tabs.executeScript({
+                            code: 'document.getElementsByClassName("col-xs-12 col-h-md-24 col-sm-8 col-lg-9")[0].style.width = "100%"; ' +
+                                'document.getElementsByClassName("hidden-xs col-sm-4 col-lg-3 col-h-md-24")[0].remove();'
+                        })
+                    });
+                }, 500, 10);
+            } else if (hostname.endsWith("pdfill.com")) {
+                chrome.tabs.query({active: true, currentWindow: true}, function (tabResult) {
+                    chrome.tabs.remove(tabResult[0].id);
+                });
             }
             break;
     }
