@@ -89,7 +89,16 @@ function removeAds(hostname) {
     switch (hostname) {
 
         case "www.sapo.pt":
-            removeClass(["double-vertical-space"], false);
+            removeClass(["double-vertical-space", "adb-inline-warning", "hide-medium bottom-space"], false);
+            setIntervalX(function () {
+                chrome.tabs.query({active: true, currentWindow: true}, function () {
+                    chrome.tabs.executeScript({
+                        code: 'document.getElementsByClassName("hide-xlarge")[2].remove(); '
+                    }, function () {
+                        catchChromeException();
+                    });
+                });
+            }, 500, 10);
             break;
 
         case "www.publico.pt":
@@ -255,7 +264,16 @@ function removeAds(hostname) {
 
         default:
             if (hostname.endsWith("facebook.com")) {
-                removeClass(["_5hn6"], false);
+                removeClass(["_5hn6", "_3qw"], false);
+                // cookie popup
+                chrome.tabs.query({active: true, currentWindow: true}, function () {
+                    chrome.tabs.executeScript({
+                        code: 'document.getElementById("u_0_6").classList = "_li"; '
+                    })
+                });
+            } else if (hostname.endsWith("google.com")) {
+                removeElementsByID(["lb", "consent-bump"]);
+                activateScrollBars();
             } else if (hostname.endsWith("meo.pt")) {
                 removeElementsByID(["warning_EU_cookiemsg"]);
             } else if (hostname.endsWith("onlinesoccermanager.com")) {
