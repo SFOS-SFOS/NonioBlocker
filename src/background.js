@@ -84,9 +84,13 @@ function start(url) {
 
 function removeAds(hostname) {
 
-    // deleteGDPRCookiesPopup();
+    deleteGDPRCookiesPopup();
 
     switch (hostname) {
+
+        case "thetvdb.com":
+            activateScrollBars();
+            break;
 
         case "www.sapo.pt":
             removeClass(["double-vertical-space", "adb-inline-warning", "hide-medium bottom-space"], false);
@@ -107,9 +111,10 @@ function removeAds(hostname) {
 
         case "www.jn.pt":
             removeClass(["tp-modal", "tp-backdrop", "fc-ab-root"], true);
-            setIntervalX(function () {
-                removeElementsByID(["template-container", "ng-app"]);
-            }, 500, 10);
+            // removeElementsParentByID(["qc-cmp2-ui"]);
+            // setIntervalX(function () {
+            //     removeElementsByID(["template-container", "ng-app"]);
+            // }, 500, 10);
             break;
 
         case "www.ojogo.pt":
@@ -151,9 +156,8 @@ function removeAds(hostname) {
 
         case "blitz.pt":
         case "expresso.pt":
-            setIntervalX(function () {
-                removeElementsByID(["imp-content-gate-root"]);
-            }, 500, 10);
+            setIntervalX(() => removeElementsByID(["imp-content-gate-root"]), 500, 10);
+            activateScrollBars();
             break;
 
         case "autoportal.iol.pt":
@@ -211,9 +215,7 @@ function removeAds(hostname) {
             break;
 
         case "www.symbolab.com":
-            setIntervalX(function () {
-                removeClassParent("tooltipster-box");
-            }, 500, 20);
+            setIntervalX(() => removeClassParent("tooltipster-box"), 500, 20);
             break;
 
         case "contaspoupanca.pt":
@@ -259,21 +261,65 @@ function removeAds(hostname) {
             break;
 
         case "www.rtp.pt":
-            removeElementsByID(["rtpprivacycontent"]);
+            setIntervalX(() => removeElementsByID(["rtpprivacycontent"]), 1000, 5);
             break;
+
+        case "www.nytimes.com":
+            chrome.tabs.query({active: true, currentWindow: true}, function () {
+                chrome.tabs.executeScript({
+                    code: 'document.getElementsByClassName("css-1qw5f1g")[0].click();'
+                });
+            });
+            chrome.tabs.query({active: true, currentWindow: true}, function () {
+                chrome.tabs.executeScript({
+                    code: 'document.getElementById("standalone-footer").remove(); ' +
+                        'document.getElementById("site-content").style="overflow:auto !important";'
+                });
+            });
+
+            setIntervalX(function () {
+                chrome.tabs.query({active: true, currentWindow: true}, function () {
+                    chrome.tabs.executeScript({
+                        code: 'document.getElementsByClassName("css-1bd8bfl")[0].remove(); ' +
+                            'document.getElementById("gateway-content").remove(); ' +
+                            'document.getElementsByClassName("css-mcm29f")[0].style = "overflow:auto !important"; ' +
+                            'document.getElementsByClassName("undefined")[0].remove(); '
+                    });
+                });
+            }, 1000, 5);
+            break;
+
 
         default:
             if (hostname.endsWith("facebook.com")) {
-                removeClass(["_5hn6", "_3qw"], false);
+                // removeClass(["_5hn6", "_3qw"], false);
                 // cookie popup
+                removeClassParent("_59s7");
+                setIntervalX(() => removeClass(["_5hn6"], false), 1000, 5);
+                removeElementsByID(["u_0_5x", "u_jsonp_3_65", "u_0_6r"], false);
                 chrome.tabs.query({active: true, currentWindow: true}, function () {
                     chrome.tabs.executeScript({
                         code: 'document.getElementById("u_0_6").classList = "_li"; '
                     })
                 });
-            } else if (hostname.endsWith("google.com")) {
-                removeElementsByID(["lb", "consent-bump"]);
-                activateScrollBars();
+            } else if (hostname.indexOf("google") > -1) {
+                if (hostname.indexOf("support") < 0) {
+                    removeElementsByID(["consent-bump"]);
+                    // removeElementsByID(["lb"]);
+                    removeClass(["gb_7"]);
+                    // removeClassParent(["m114nf"]);
+                    // activateScrollBars();
+                    // removeElementsByID(["lb"], false);
+                    chrome.tabs.executeScript({
+                        code: 'document.getElementsByTagName("html")[0].style = "overflow:auto !important"; ' +
+                            'document.getElementById("lb").childNodes.forEach((value, key, map) => value.remove()) '
+                    });
+                }
+            } else if (hostname.endsWith("youtube.com")) {
+                setIntervalX(function () {
+                    removeElementsByID(["lb", "consent-bump"]);
+                    removeClass(["ytd-popup-container"], false);
+                }, 1000, 10);
             } else if (hostname.endsWith("meo.pt")) {
                 removeElementsByID(["warning_EU_cookiemsg"]);
             } else if (hostname.endsWith("onlinesoccermanager.com")) {
@@ -294,6 +340,38 @@ function removeAds(hostname) {
                 });
             } else if (hostname.endsWith("fandom.com")) {
                 removeClass(["_1MLS_xjiUjam_u2qmURY4i"], true);
+            } else if (hostname.endsWith("sapo.pt")) {
+                setIntervalX(function () {
+                    chrome.tabs.query({active: true, currentWindow: true}, function () {
+                        chrome.tabs.executeScript({
+                            code: 'try {\n' +
+                                '    new Map(Object.entries(document.getElementsByClassName("adb-inline-warning")))\n' +
+                                '        .forEach(function(value, key, map) {\n' +
+                                '            value.parentElement.remove()\n' +
+                                '        });\n' +
+                                '} catch (error) {\n' +
+                                '    console.log("The error:\\t", error);\n' +
+                                '}'
+                        });
+                    });
+                }, 1000, 5);
+            } else if (hostname.toString().indexOf("sci-hub") > -1) {
+                if (isChrome) {
+                    console.log("Entrei 2\n");
+                    chrome.tabs.query({active: true, currentWindow: true}, function () {
+                        chrome.tabs.executeScript({
+                            code: 'document.getElementById("menu").remove(); ' +
+                                'document.getElementById("article").style.marginLeft = 0;'
+                        });
+                    });
+                } else {
+                    browser.tabs.query({active: true, currentWindow: true}, function () {
+                        browser.tabs.executeScript({
+                            code: 'document.getElementById("menu").remove(); ' +
+                                'document.getElementById("article").style.marginLeft = 0;'
+                        });
+                    });
+                }
             }
             break;
     }
@@ -371,7 +449,7 @@ function removeClass(array, addScrollBar) {
     }
 }
 
-function removeElementsByID(array) {
+function removeElementsByID(array, addScrollBar) {
     for (let i = 0; i < array.length; i++) {
         if (isChrome) {
             chrome.tabs.query({active: true, currentWindow: true}, function () {
@@ -389,7 +467,9 @@ function removeElementsByID(array) {
             });
         }
     }
-    activateScrollBars();
+    if (addScrollBar) {
+        activateScrollBars();
+    }
 }
 
 function removeNonioIframe() {
@@ -417,12 +497,11 @@ function removeElementsParentByID(array) {
     for (let i = 0; i < array.length; i++) {
         chrome.tabs.query({active: true, currentWindow: true}, function () {
             chrome.tabs.executeScript({
-                code: 'document.getElementById("' + array[i] + '").parentElement.remove();'
-                // code: "try {" +
-                //     "document.getElementById(\"' + array[i] + '\").parentElement.remove();" +
-                //     "} catch (error) {" +
-                //     "console.log(\"Error: \", error)" +
-                //     "}"
+                code: "try {\n" +
+                    "document.getElementById(\"" + array[i] + "\").parentElement.remove();\n" +
+                    "} catch (error) {\n" +
+                    "// console.log(\"Error: \", error)\n" +
+                    "}\n"
             }, function (arrayOfResults) {
                 if (arrayOfResults !== undefined && arrayOfResults.length > 0) {
                     if (DEBUG && arrayOfResults[0] != null) {
@@ -472,10 +551,7 @@ function activateScrollBars() {
 
 
 function deleteGDPRCookiesPopup() {
-    setIntervalX(function () {
-        removeElementsParentByID(["qcCmpUi", "qc-cmp2-ui"]);
-        activateScrollBars();
-    }, 500, 10);
+    setIntervalX(() => removeElementsParentByID(["qcCmpUi", "qc-cmp2-ui"]), 500, 10);
 }
 
 
