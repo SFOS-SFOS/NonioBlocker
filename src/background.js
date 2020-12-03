@@ -66,6 +66,22 @@ if (isFirefox || isEdge) {
         });
     });
 
+    chrome.webRequest.onBeforeRequest.addListener(
+        function (details) {
+            // console.log("URL:\t" + details.url);
+            if (details.url.indexOf("publico.pt") > -1) {
+                if (details.url.indexOf("js/scrolldepth.min.js") > -1 || details.url.indexOf("js/site.min.js") > -1 || details.url.indexOf("cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js") > -1) {
+                    return {cancel: true};
+                }
+            }
+            return {cancel: false};
+        },
+        {
+            urls: ["*://www.publico.pt/*"]
+        },
+        ["blocking"]
+    );
+
 }
 
 
@@ -293,14 +309,13 @@ function removeAds(hostname) {
         default:
             if (hostname.endsWith("facebook.com")) {
                 // removeClass(["_5hn6", "_3qw"], false);
-                // cookie popup
-                removeClassParent("_59s7");
                 setIntervalX(() => removeClass(["_5hn6"], false), 1000, 5);
                 removeElementsByID(["u_0_5x", "u_jsonp_3_65", "u_0_6r"], false);
                 chrome.tabs.query({active: true, currentWindow: true}, function () {
                     chrome.tabs.executeScript({
-                        code: 'document.getElementById("u_0_6").classList = "_li"; '
-                    })
+                        code: 'document.getElementById("u_0_6").classList = "_li"; ' +
+                            'document.getElementsByClassName("_59s7")[0].parentElement.remove(); '
+                    });
                 });
             } else if (hostname.indexOf("google") > -1) {
                 if (hostname.indexOf("support") < 0) {
@@ -316,10 +331,92 @@ function removeAds(hostname) {
                     });
                 }
             } else if (hostname.endsWith("youtube.com")) {
+
                 setIntervalX(function () {
-                    removeElementsByID(["lb", "consent-bump"]);
+                    // removeElementsByID(["lb", "consent-bump"]);
+                    removeElementsByID(["consent-bump"]);
                     removeClass(["ytd-popup-container"], false);
-                }, 1000, 10);
+
+
+                    // code: 'if (document.getElementById("lb") !== null) {\n' +
+                    //     '    console.log("Here 1\\n");\n' +
+                    //     '    document.getElementById("lb").remove();\n' +
+                    //     '}\n' +
+                    //     'if (document.getElementById("consent-bump") !== null) {\n' +
+                    //     '    document.getElementById("consent-bump").remove();\n' +
+                    //     '    console.log("Here 2\\n");\n' +
+                    //     '}\n' +
+                    //     'if (document.getElementsByClassName("ytd-popup-container").length > 0) {\n' +
+                    //     '    document.getElementsByClassName("ytd-popup-container")[0].remove();\n' +
+                    //     '    console.log("Here 3\\n");\n' +
+                    //     '}\n' +
+                    //     'let _interval = setInterval(function () {\n' +
+                    //     'console.log("estou aqui");' +
+                    //     '    if (document.getElementsByClassName("ytp-play-button ytp-button")[0].title.indexOf("Reproduzir (k)") > -1) {\n' +
+                    //     '        document.getElementsByClassName("ytp-play-button ytp-button")[0].click();\n' +
+                    //     '        clearInterval(_interval);\n' +
+                    //     '    }\n' +
+                    //     '}, 1000);\n'
+                    // });
+                    /*
+                                            if (array.length > 0) {
+                                                // console.log("Tab URL:\t" + array[0].url);
+                                                if (!array[0].url.endsWith("youtube.com/")) {
+                                                    chrome.tabs.executeScript({
+                                                        code: 'if (document.getElementsByClassName("ytp-play-button ytp-button")[0].title.indexOf("Reproduzir (k)") > -1 ) {\n' +
+                                                            '    document.getElementsByClassName("ytp-play-button ytp-button")[0].click();\n' +
+                                                            '}'
+                                                    });
+                                                }
+                                            }
+                    */
+
+                }, 1000, 20);
+
+                chrome.tabs.query({active: true, currentWindow: true}, function (array) {
+
+                    chrome.tabs.executeScript({
+                        code: 'try {\n' +
+                            '    let i = 0;\n' +
+                            '    const repetitions = 20;\n' +
+                            '    let _interval = setInterval(function() {\n' +
+                            '      //  console.log("estou aqui");\n' +
+                            '      //  console.log("Título: \\t", document.getElementsByClassName("ytp-play-button ytp-button")[0].title);\n' +
+                            '        if (document.getElementById("lb") !== null) {\n' +
+                            '            console.log("Here 1");\n' +
+                            '            document.getElementById("lb").remove();\n' +
+                            '        }\n' +
+                            '        if (document.getElementById("consent-bump") !== null) {\n' +
+                            '            document.getElementById("consent-bump").remove();\n' +
+                            '            console.log("Here 2");\n' +
+                            '        }\n' +
+                            '        if (document.getElementsByClassName("ytd-popup-container").length > 0) {\n' +
+                            '            document.getElementsByClassName("ytd-popup-container")[0].remove();\n' +
+                            '            console.log("Here 3");\n' +
+                            '        }\n' +
+                            '        if (window.location.href.indexOf("watch") > -1) {\n' +
+                            '            if (document.getElementsByClassName("ytp-play-button ytp-button")[0].title.indexOf("Reproduzir (k)") > -1) {\n' +
+                            '                document.getElementsByClassName("ytp-play-button ytp-button")[0].click();\n' +
+                            '                window.clearInterval(_interval);\n' +
+                            '            }\n' +
+                            '        } else {\n' +
+                            '            if (document.getElementsByClassName("ytp-play-button ytp-button")[0].title.indexOf("Pausa (k)") > -1) {\n' +
+                            '                document.getElementsByClassName("ytp-play-button ytp-button")[0].click();\n' +
+                            '                window.clearInterval(_interval);\n' +
+                            '            }\n' +
+                            '        }\n' +
+                            '\n' +
+                            '        if (++i === repetitions) {\n' +
+                            '            window.clearInterval(_interval);\n' +
+                            '        }\n' +
+                            '\n' +
+                            '    }, 1000);\n' +
+                            '} catch (error) {\n' +
+                            '    console.log("The error:\\\\t", error);\n' +
+                            '}'
+                    });
+                });
+
             } else if (hostname.endsWith("meo.pt")) {
                 removeElementsByID(["warning_EU_cookiemsg"]);
             } else if (hostname.endsWith("onlinesoccermanager.com")) {
